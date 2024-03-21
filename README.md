@@ -37,7 +37,7 @@ const show_balance = false;
 // Coingecko api call for electra protocol market data
 const coingecko_api_request_url = "https://api.coingecko.com/api/v3/coins/electra-protocol?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false";
 // Electra protocol icon from the official website downloads
-const electra_protocol_icon_url = "https://www.electraprotocol.com/wp-content/uploads/2021/10/electra-protocol-logo.png";
+const electra_protocol_icon_url = "[https://www.electraprotocol.com/wp-content/uploads/2021/10/electra-protocol-logo.png](https://github.com/DevCaribou/XEP_iOS_Widget/blob/main/images/electra-protocol-logo.png?raw=true)";
 
 
 let request_api = new Request(coingecko_api_request_url);
