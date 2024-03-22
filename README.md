@@ -30,6 +30,8 @@ Right: with 'show_balance = false'
 const balance_xep = 1000000.00;
 // Show the balance ('true') or hide it ('false')
 const show_balance = false;
+// Switch the currency between dollars "usd" or euros "eur"
+const currency = "usd"; // Available: ["usd", "eur"]
 
 // END CUSTOM AREA
 // You should not update anything below that point unless you know what you're doing
@@ -72,6 +74,25 @@ function addPriceEvolutionStack(target_stack, period, evolution){
     }
 }
 
+// util function to format proice
+function priceDisplayForCurrency(price, currency, digits) {
+  var priceString = "0";
+  var parts = price.toFixed(digits).split(".");
+
+  switch (currency) {
+  case "eur":
+    priceString = parts[0].toString().replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.') +  (parts.length > 1 ? "," + parts[1] : "") + "€";
+    break;
+  case "usd":
+    priceString = "$" + parts[0].toString().replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ',') +  (parts.length > 1 ? "." + parts[1] : "");
+    break;
+  default:  
+    priceString = parts[0].toString().replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.') +  (parts.length > 1 ? "," + parts[1] : "");
+  }
+
+  return priceString;
+}
+
 // Create the Widget and its content
 async function createWidget(current_value, change_24h, change_7d, change_30d)   {
     const balance_value = current_value * balance_xep;
@@ -100,7 +121,7 @@ async function createWidget(current_value, change_24h, change_7d, change_30d)   
         // Total balance stack
         const stack_balance = stack_layout.addStack();
         stack_balance.addSpacer();
-        const text_balance = stack_balance.addText(`$${balance_value.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`);
+        const text_balance = stack_balance.addText(priceDisplayForCurrency(balance_value, currency, 2));
         text_balance.font = Font.boldSystemFont(80);
         text_balance.minimumScaleFactor = 0.1;
         stack_balance.addSpacer();
@@ -108,7 +129,7 @@ async function createWidget(current_value, change_24h, change_7d, change_30d)   
         // XEP price stack
         const stack_price = stack_layout.addStack();
         stack_price.addSpacer();
-        const text_price = stack_price.addText(`1 XEP = $${current_value.toFixed(6).toString()}`);
+        const text_price = stack_price.addText("1 XEP = " + priceDisplayForCurrency(current_value, currency, 6));
         text_price.font = Font.mediumSystemFont(12);
         text_price.textOpacity = 0.8;
         stack_price.addSpacer();
@@ -125,7 +146,7 @@ async function createWidget(current_value, change_24h, change_7d, change_30d)   
         // XEP Price
         const stack_price = stack_layout.addStack();
         stack_price.addSpacer();
-        const text_price = stack_price.addText(`$${current_value.toFixed(6).toString()}`);
+        const text_price = stack_price.addText(priceDisplayForCurrency(current_value, currency, 6));
         text_price.font = Font.boldSystemFont(80);
         text_price.minimumScaleFactor = 0.1;
         stack_price.addSpacer();
@@ -145,7 +166,7 @@ async function createWidget(current_value, change_24h, change_7d, change_30d)   
     return widget;
 }
 
-const widget = await createWidget(coin_data['market_data']['current_price'].usd, coin_data['market_data']['price_change_percentage_24h'], coin_data['market_data']['price_change_percentage_7d'], coin_data['market_data']['price_change_percentage_30d']);
+const widget = await createWidget(coin_data['market_data']['current_price'][currency], coin_data['market_data']['price_change_percentage_24h'], coin_data['market_data']['price_change_percentage_7d'], coin_data['market_data']['price_change_percentage_30d']);
 
 if (config.runsInWidget) {
   Script.setWidget(widget);
@@ -156,7 +177,7 @@ if (config.runsInWidget) {
 Script.complete();
 ```
 
-4. If you want to show your balance, edit 'balance_xep' and 'show_balance' to your liking
+4. If you want to show your balance, edit 'balance_xep' and 'show_balance' to your liking. You can also switch from usd to eur
 5. Rename the script (click on the 'Untitled Sctipt 1' label on the top of the screen)
 
 <img src="./images/update_name.png" style="zoom: 50%;" />
